@@ -1,0 +1,5 @@
+streamlit
+langchain
+openai
+snowflake-connector-python
+python-dotenv
