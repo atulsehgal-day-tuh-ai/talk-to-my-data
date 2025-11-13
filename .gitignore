@@ -30,3 +30,8 @@ langchain/
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# folders
+# .gitignore
+maintenance/
+backups/

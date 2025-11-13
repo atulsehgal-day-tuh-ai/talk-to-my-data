@@ -1,5 +1,14 @@
-streamlit
-langchain
-openai
-snowflake-connector-python
-python-dotenv
+# Core LangChain ecosystem (modular >=1.0 structure)
+langchain>=0.2.12
+langchain-core>=0.2.10
+langchain-community>=0.2.7
+langchain-openai>=0.1.7
+langchain-experimental>=0.0.63
+
+# Snowflake + SQL
+snowflake-connector-python>=3.10
+snowflake-sqlalchemy>=1.6
+SQLAlchemy>=2.0
+
+# Frontend / app interface
+streamlit>=1.37

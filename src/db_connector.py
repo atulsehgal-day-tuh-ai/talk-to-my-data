@@ -11,19 +11,20 @@ Environment Variables:
     - SNOWFLAKE_DB: The name of the Snowflake database to connect to.
     - SNOWFLAKE_SCHEMA: The schema within the Snowflake database to use.
 """
+from utils.config_loader import load_env
+load_env()
 
 import snowflake.connector
 import os
 
 def get_connection():
     return snowflake.connector.connect(
-        user=os.getenv("SNOWFLAKE_USER"),
-        password=os.getenv("SNOWFLAKE_PASSWORD"),
-        account=os.getenv("SNOWFLAKE_ACCOUNT"),
-        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),
-        database=os.getenv("SNOWFLAKE_DB"),
-        schema=os.getenv("SNOWFLAKE_SCHEMA")
-    )
+                    user=os.getenv("SNOWFLAKE_USER"),
+                    password=os.getenv("SNOWFLAKE_PASSWORD"),
+                    account=os.getenv("SNOWFLAKE_ACCOUNT"),
+                    authenticator=os.getenv("SNOWFLAKE_AUTHENTICATOR"),
+                    role=os.getenv("SNOWFLAKE_ROLE")
+                    )
 
 def run_query(sql: str):
     conn = get_connection()

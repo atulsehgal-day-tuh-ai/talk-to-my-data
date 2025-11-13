@@ -24,14 +24,23 @@ Note:
         export SNOWFLAKE_ROLE="your_role"
 """
 
+from utils.config_loader import load_env
+load_env()
 
-import snowflake.connector, os
+import os
+print("SNOWFLAKE_USER:", os.getenv("SNOWFLAKE_USER"))
+print("SNOWFLAKE_ACCOUNT:", os.getenv("SNOWFLAKE_ACCOUNT"))
+print("SNOWFLAKE_AUTHENTICATOR:", os.getenv("SNOWFLAKE_AUTHENTICATOR"))
+print("SNOWFLAKE_PASSWORD:", "✅ Loaded" if os.getenv("SNOWFLAKE_PASSWORD") else "❌ EMPTY")
+
+import snowflake.connector
 
 conn = snowflake.connector.connect(
     user=os.getenv("SNOWFLAKE_USER"),
+    password=os.getenv("SNOWFLAKE_PASSWORD"),
     account=os.getenv("SNOWFLAKE_ACCOUNT"),
     authenticator=os.getenv("SNOWFLAKE_AUTHENTICATOR"),
-    role=os.getenv("SNOWFLAKE_ROLE")
+    role=os.getenv("SNOWFLAKE_ROLE"),
 )
 
 cur = conn.cursor()
