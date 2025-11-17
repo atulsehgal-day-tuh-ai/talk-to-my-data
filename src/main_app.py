@@ -1,21 +1,21 @@
 """
-This Streamlit application allows users to interact with their data using natural language queries.
-It combines the power of a Large Language Model (LLM) and Snowflake database to generate SQL queries
-from user input and execute them on the database.
+Streamlit app: NL question -> SQL (via LangChain) -> run on Snowflake -> show results.
 """
 
 # --- Path and environment setup ---------------------------------------------
-import sys, os
+import sys
+import os
 
-# Ensure project root (/src parent) is available for imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Load environment variables
 from utils.config_loader import load_env
+
 load_env()
 
 # --- Application imports ----------------------------------------------------
 import streamlit as st
+import pandas as pd
+
 from llm_agent import get_agent
 
 
@@ -24,24 +24,37 @@ st.title("💬 Talk to My Data – Hybrid (LLM + Snowflake)")
 question = st.text_input("Ask a question about your data:")
 
 if question:
+    # 1) Get chain + DB
     chain, db = get_agent()
 
-    # --- 1) Run chain to generate SQL ---------------------------------------
-    response = chain.invoke({"query": question})
-
-    # Extract ONLY the SQL string
-    sql = response.get("result")
+    # 2) NL -> SQL (chain is in *SQL-only* mode)
+    sql = chain.invoke({"question": question})
 
     st.subheader("Generated SQL")
     st.code(sql, language="sql")
 
-    # --- 2) Run SQL on Snowflake -------------------------------------------
+    # 3) Execute SQL on Snowflake
     try:
-        rows = db.run(sql)  # rows is a list of tuples
-        if not rows:
-            st.info("No rows returned.")
-        else:
-            st.subheader("Results")
-            st.dataframe(rows)
+        rows = db.run(sql)  # typically a list of tuples, e.g. [(6001215,)]
     except Exception as e:
         st.error(f"Query failed: {e}")
+    else:
+        if not rows:
+            st.info("No rows returned.")
+        # Single aggregated value, e.g. COUNT(*)
+        elif (
+            isinstance(rows, list)
+            and len(rows) == 1
+            and isinstance(rows[0], (list, tuple))
+            and len(rows[0]) == 1
+        ):
+            value = rows[0][0]
+            st.subheader("Result")
+            st.metric(label="Value", value=value)
+            # Optional: show raw rows for debugging
+            st.caption(f"Raw rows: {rows}")
+        else:
+            # Generic table case
+            df = pd.DataFrame(rows)
+            st.subheader("Results")
+            st.dataframe(df)
