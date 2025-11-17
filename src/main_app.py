@@ -16,7 +16,8 @@ load_env()
 import streamlit as st
 import pandas as pd
 
-from llm_agent import get_agent
+from src.llm_agent import get_agent
+from utils.helper import normalize_rows
 
 
 st.title("💬 Talk to My Data – Hybrid (LLM + Snowflake)")
@@ -24,37 +25,28 @@ st.title("💬 Talk to My Data – Hybrid (LLM + Snowflake)")
 question = st.text_input("Ask a question about your data:")
 
 if question:
-    # 1) Get chain + DB
-    chain, db = get_agent()
+    
+    generate_sql, db = get_agent()
 
-    # 2) NL -> SQL (chain is in *SQL-only* mode)
-    sql = chain.invoke({"question": question})
+    sql = generate_sql(question)
 
     st.subheader("Generated SQL")
     st.code(sql, language="sql")
 
-    # 3) Execute SQL on Snowflake
     try:
-        rows = db.run(sql)  # typically a list of tuples, e.g. [(6001215,)]
+        raw = db.run(sql)
     except Exception as e:
         st.error(f"Query failed: {e}")
     else:
-        if not rows:
+        result = normalize_rows(raw)
+
+        if result is None:
             st.info("No rows returned.")
-        # Single aggregated value, e.g. COUNT(*)
-        elif (
-            isinstance(rows, list)
-            and len(rows) == 1
-            and isinstance(rows[0], (list, tuple))
-            and len(rows[0]) == 1
-        ):
-            value = rows[0][0]
-            st.subheader("Result")
-            st.metric(label="Value", value=value)
-            # Optional: show raw rows for debugging
-            st.caption(f"Raw rows: {rows}")
-        else:
-            # Generic table case
-            df = pd.DataFrame(rows)
+
+        elif isinstance(result, pd.DataFrame):
             st.subheader("Results")
-            st.dataframe(df)
+            st.dataframe(result)
+
+        else:
+            # Scalar result
+            st.metric("Value", result)
