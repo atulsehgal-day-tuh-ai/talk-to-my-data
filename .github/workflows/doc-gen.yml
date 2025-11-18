@@ -4,66 +4,75 @@ on:
   push:
     branches:
       - main
-      - master
       - dev
+      - '**'
 
 permissions:
-  contents: write   # allow workflow to commit README changes
-  id-token: write
-  actions: read
+  contents: write
 
 jobs:
   generate-docs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # Generate folder tree
-      - name: Generate folder structure
+      - name: Generate folder tree
         run: |
-          echo "📁 Folder Structure" > folder_structure.txt
-          echo "-----------------" >> folder_structure.txt
+          echo "📁 Project Folder Structure" > folder_structure.txt
+          echo "--------------------------" >> folder_structure.txt
           tree -a -I '.git|.github|node_modules|__pycache__' >> folder_structure.txt
 
-      # Use GitHub Copilot to generate README
-      - name: Generate README using Copilot
-        id: copilot
-        uses: github/copilot-chat-action@v1
-        with:
-          prompt: |
-            You are GitHub Copilot. Read the folder_structure.txt in this repo and generate a complete README.md with:
-            - Project overview
-            - Key features
-            - Architecture summary
-            - Folder structure (clean tree)
-            - Setup instructions
-            - How to run
-            - Dependencies
-            - Example usage
-            - Contribution guidelines
-            - License section
-            Use clean Markdown. You are creating a polished README for a production-quality GitHub project.
-
-      # Write the README.md output
-      - name: Save README.md
+      - name: Generate README using OpenAI GPT
+        id: generate_readme
         run: |
-          echo "${{ steps.copilot.outputs.response }}" > README.md
+          python3 - << 'EOF'
+          import os, openai
 
-      # Commit changes only if README changed
-      - name: Commit README if updated
+          openai.api_key = os.getenv("OPENAI_API_KEY")
+
+          with open("folder_structure.txt") as f:
+              folder_tree = f.read()
+
+          prompt = f"""
+          You are an expert software documentation generator.
+          Using the folder structure below, generate a professional README.md that includes:
+          - Overview
+          - Features
+          - Architecture summary
+          - Folder structure
+          - Setup instructions
+          - Running the app
+          - Example usage
+          - Configuration details
+          - Testing instructions
+          - Contribution guidelines
+          - License section
+
+          Folder structure:
+          {folder_tree}
+          """
+
+          # Call GPT
+          completion = openai.chat.completions.create(
+              model="gpt-4o-mini",
+              messages=[{"role": "user", "content": prompt}]
+          )
+
+          output = completion.choices[0].message.content
+
+          with open("README.md", "w") as f:
+              f.write(output)
+          EOF
+
+      - name: Commit README.md
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           if ! git diff --quiet README.md; then
             git add README.md
-            git commit -m "Auto-update README via Copilot"
+            git commit -m "Auto-update README with OpenAI GPT"
             git push
           else
-            echo "No README changes detected."
-          fi
+            echo "No README changes"
