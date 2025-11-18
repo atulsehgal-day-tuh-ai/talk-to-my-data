@@ -20,18 +20,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # Install tree command (required to list folders)
       - name: Install tree utility
         run: sudo apt-get update && sudo apt-get install -y tree
 
-      # Generate ACTUAL folder structure
       - name: Generate folder tree
         run: |
           echo "📁 Project Folder Structure" > folder_structure.txt
           echo "--------------------------" >> folder_structure.txt
           tree -a -I '.git|.github|__pycache__|.venv' >> folder_structure.txt
 
-      # Upload folder_structure.txt so you can inspect it
       - name: Upload folder_structure.txt for debugging
         uses: actions/upload-artifact@v4
         with:
@@ -46,159 +43,126 @@ jobs:
       - name: Generate README using OpenAI GPT
         run: |
           python3 - << 'EOF'
-          import os
-          import openai
+import os
+import openai
 
-          openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-          with open("folder_structure.txt") as f:
-              folder_tree = f.read()
+with open("folder_structure.txt") as f:
+    folder_tree = f.read()
 
-          prompt = f"""
-                  You are an expert technical writer, software architect, and developer advocate.
-                  Generate a **highly detailed, project-specific README.md** for THIS repository.
+prompt = f"""
+You are an expert technical writer, software architect, and developer advocate.
+Generate a highly detailed, project-specific README.md for THIS repository.
 
-                  ====================================================================
-                  ## PROJECT CONTEXT
-                  ====================================================================
+====================================================================
+## PROJECT CONTEXT
+====================================================================
 
-                  ### Repository Name
-                  talk-to-my-data
+### Repository Name
+talk-to-my-data
 
-                  ### Project Name
-                  Convert the repo name into a human-friendly title:
-                  Use exactly: **"Talk to My Data"**
+### Project Name
+Convert the repo name into a human-friendly title:
+Use exactly: Talk to My Data
 
-                  ### Technology Focus
-                  - This project is designed to work with **Snowflake** (not a generic database)
-                  - It includes an **LLM agent** capable of interacting with Snowflake
-                  - Requirements should be inferred from the folder structure and requirements.txt
+### Technology Focus
+- This project is designed to work with Snowflake (not a generic database)
+- It includes an LLM agent capable of interacting with Snowflake
+- Requirements should be inferred from the folder structure and requirements.txt
 
-                  ### Environment Setup Requirements
-                  README MUST explain:
-                  - How to configure `configs/dev.env`
-                  - What each environment variable means
-                  - Provide a full example block of a valid dev.env:
+### Environment Setup Requirements
+README MUST explain:
+- How to configure configs/dev.env
+- What each environment variable means
+- Provide a full example block of a valid dev.env:
 
-                  ```
-                  SNOWFLAKE_ACCOUNT=your_account
-                  SNOWFLAKE_USER=your_user
-                  SNOWFLAKE_PASSWORD=your_password
-                  SNOWFLAKE_ROLE=your_role
-                  SNOWFLAKE_DATABASE=your_db
-                  SNOWFLAKE_SCHEMA=public
-                  SNOWFLAKE_WAREHOUSE=your_wh
-                  OPENAI_API_KEY=your_api_key
-                  ```
+```
+SNOWFLAKE_ACCOUNT=your_account
+SNOWFLAKE_USER=your_user
+SNOWFLAKE_PASSWORD=your_password
+SNOWFLAKE_ROLE=your_role
+SNOWFLAKE_DATABASE=your_db
+SNOWFLAKE_SCHEMA=public
+SNOWFLAKE_WAREHOUSE=your_wh
+OPENAI_API_KEY=your_api_key
+```
 
-                  ### Folder Structure (REAL, NOT HALLUCINATED)
-                  Use the actual folder structure below to infer purpose, content, and architecture.
+### Folder Structure (REAL, NOT HALLUCINATED)
+Use the actual folder structure below to infer purpose, content, and architecture.
 
-                  FOLDER STRUCTURE:
-                  {folder_tree}
+FOLDER STRUCTURE:
+{folder_tree}
 
-                  ====================================================================
-                  ## README REQUIREMENTS
-                  ====================================================================
+====================================================================
+## README REQUIREMENTS
+====================================================================
 
-                  The README MUST include EVERY ONE of these sections in detail:
+### 1. Project Name
+- Use Talk to My Data
 
-                  ### 1. Project Name
-                  - Use **Talk to My Data**
+### 2. Project Overview
+- Deduce purpose from the real folder structure
 
-                  ### 2. Project Overview
-                  - Deduce purpose based on folders such as src/, utils/, configs/
-                  - Describe as an LLM-driven Snowflake query and interaction framework
+### 3. Features
+- Infer from utilities, Snowflake connector, LLM agent, scripts
 
-                  ### 3. Features
-                  - Capabilities inferred from db_connector.py, llm_agent.py, utilities, and scripts
+### 4. Architecture Summary
+Explain components:
+- src/main_app.py
+- src/db_connector.py
+- src/llm_agent.py
+- utils/
+- configs/
+- scripts/
+- .github/workflows
 
-                  ### 4. Architecture Summary
-                  Explain major components:
-                  - `src/main_app.py` – main entrypoint
-                  - `src/db_connector.py` – Snowflake connector logic
-                  - `src/llm_agent.py` – LLM interface & query agent
-                  - `utils/` – configuration loader, helpers, tree generator
-                  - `configs/settings.yml` – configuration mapping
-                  - `configs/dev.env` – environment variable store
-                  - `scripts/*.ps1` – operational automation scripts
-                  - `.github/workflows` – automated README generation
+### 5. Folder Structure Explanation
+Describe the purpose of each real folder
 
-                  ### 5. Folder Structure Explanation
-                  Describe purpose of each:
-                  - configs/
-                  - sandbox/ (should be described as scratch area, not real tests)
-                  - scripts/
-                  - src/
-                  - utils/
-                  - requirements.txt
-                  - bundle.yaml
-                  - .github/workflows/
+### 6. Setup Instructions
+Include requirements, virtualenv, environment variables, installation steps
 
-                  ### 6. Setup Instructions
-                  Include:
-                  - Python version requirement
-                  - Creating virtual environment
-                  - Installing dependencies from requirements.txt
-                  - Setting up dev.env
-                  - Verifying Snowflake connectivity
+### 7. Running the Application
+Explain python run, PowerShell run scripts, configuration loading
 
-                  ### 7. Running the Application
-                  Explain:
-                  - Running via python: `python src/main_app.py`
-                  - Running via PowerShell: `scripts/run_local.ps1`
-                  - How environment variables are loaded
+### 8. Description of configs/
+(settings.yml, dev.env)
 
-                  ### 8. Description of configs/
-                  - Explain settings.yml
-                  - Explain dev.env variables and usage
+### 9. Description of utils/
+(config_loader.py, generate_tree.py, helper.py)
 
-                  ### 9. Description of utils/
-                  - Summaries of config_loader.py, generate_tree.py, helper.py
+### 10. Description of sandbox/
+Explain it is for scratch and experimentation
 
-                  ### 10. Description of sandbox/
-                  - Clarify it is not a test suite
-                  - Used for experiments, scratch development, trial scripts
+### 11. Example Usage
+Provide Snowflake + LLM example usage
 
-                  ### 11. Example Usage
-                  Provide:
-                  - A Snowflake query example handled by the LLM agent
-                  - A CLI example or function call example
-                  - A simple workflow example
+### 12. Contribution Guidelines
 
-                  ### 12. Contribution Guidelines
-                  Include:
-                  - Basic branching strategy
-                  - Expectations for PRs
-                  - Naming conventions
-                  - How to add new modules
+### 13. License Section
 
-                  ### 13. License Section
-                  Include a placeholder if no license is committed.
+====================================================================
+## FINAL INSTRUCTIONS
+====================================================================
 
-                  ====================================================================
-                  ## FINAL INSTRUCTIONS
-                  ====================================================================
+- Produce a polished README
+- Tailored to this exact repository
+- No hallucinations
+- GitHub Markdown must render correctly
+"""
 
-                  - Produce a **polished, professional README.md**.
-                  - The README MUST be **specific to THIS repository**, using the actual folder structure.
-                  - DO NOT hallucinate directories, components, or technologies.
-                  - DO NOT generate a generic template.
-                  - Use clear Markdown formatting with headers, lists, and code blocks.
-                  - README must read like production-grade documentation.
+completion = openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}]
+)
 
-          """
+output = completion.choices[0].message.content
 
-          completion = openai.chat.completions.create(
-              model="gpt-4o-mini",
-              messages=[{"role": "user", "content": prompt}]
-          )
+with open("README.md", "w") as f:
+    f.write(output)
 
-          output = completion.choices[0].message.content
-
-          with open("README.md", "w") as f:
-              f.write(output)
-          EOF
+EOF
 
       - name: Commit README.md
         shell: bash
