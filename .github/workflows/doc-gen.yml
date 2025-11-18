@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - dev
 
 permissions:
   contents: write   # allow workflow to commit README changes
