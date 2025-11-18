@@ -1,140 +1,121 @@
-# Project Name
+```markdown
+# Talk to My Data
 
 ## Project Overview
-
-This project aims to build a robust framework for database connectivity and interaction using a Language Model (LLM) agent. The framework is designed to facilitate the execution of SQL queries, manage database connections, and generate queries efficiently through various utilities. This can benefit developers, data analysts, and data engineers looking to simplify their database interactions.
+"Talk to My Data" is an LLM-driven framework designed for seamless interaction with Snowflake. By leveraging a language model, users can query their data repository, generate SQL queries dynamically, and gain insights from their Snowflake database while simplifying the data interaction process. The system enhances data accessibility and usability through natural language processing, making it easier for users to extract relevant information from large datasets.
 
 ## Features
-
-- **Database Connectivity**: Simplified and reliable connections to various databases.
-- **LLM Integration**: Utilizes an LLM agent to generate and refine SQL queries.
-- **Utility Functions**: Provides helper functions to manage configurations, generate structures, and streamline tasks.
-- **Comprehensive Testing**: Includes multiple test scripts to ensure robustness and reliability of the implemented features.
-- **Easy Configuration Management**: Configurable settings for different environments via YAML files.
+- **Natural Language Queries**: Users can input queries in plain English, which the LLM translates into SQL.
+- **Snowflake Integration**: Direct interaction with Snowflake using a dedicated connector for executing queries.
+- **Dynamic SQL Generation**: Automatically generates and executes SQL code based on user queries.
+- **Configurable Parameters**: Environment-driven settings allow easy adjustments without modifying code directly.
+- **Automation Scripts**: Includes PowerShell scripts for local development and testing workflows.
 
 ## Architecture Summary
-
-The project is structured to separate the concerns of various components. The architecture includes modules for database connectivity, language model interactions, utility functions, and separate testing scripts to facilitate development and verification of the project’s functionalities.
+- **`src/main_app.py`**: The main entry point of the application, responsible for coordinating interactions between user inputs and processing.
+- **`src/db_connector.py`**: Contains the logic required to connect to Snowflake, execute queries, and handle data fetching.
+- **`src/llm_agent.py`**: Implements the logic for the LLM interface, serving as the primary agent for handling queries and generating SQL commands.
+- **`utils/`**: Provides helper functions, configuration loading utilities, and tree structure generation for enhancing app functionality.
+- **`configs/settings.yml`**: Mapping configuration file for various application settings.
+- **`configs/dev.env`**: A file storing environment variables for local development.
+- **`scripts/*.ps1`**: PowerShell scripts used for simplifying common operations and enhancing local workflow automation.
+- **`.github/workflows`**: Contains configurations for automatically generating README and managing CI/CD processes.
 
 ## Folder Structure Explanation
-
-```
-.
-├── .gitignore                   # Specifies files/folders to ignore in version control
-├── .vscode                      # Visual Studio Code settings
-│   ├── settings.json            # Workspace configurations
-│   └── tasks.json               # Task configurations for VS Code
-├── README.md                    # Project documentation
-├── bundle.yaml                  # Bundler configuration for dependencies
-├── configs                      # Configuration files for the project
-│   └── settings.yaml            # Main configuration settings for the application
-├── folder_structure.txt         # Contains description of the folder structure
-├── requirements.txt             # Python package dependencies
-├── sandbox                      # Module for testing and exploration
-│   ├── test_connection.py       # Tests for database connection functionality
-│   ├── test_db.py               # Tests for database interactions
-│   ├── test_langchain.py        # Tests for LLM specific interactions
-│   ├── test_sql.ipynb           # Jupyter Notebook for SQL testing
-│   └── test_sql_generation.py    # Tests for SQL query generation
-├── scripts                      # Scripts for running the application
-│   └── run_local.ps1           # PowerShell script for running the application locally
-├── src                          # Main source code of the application
-│   ├── db_connector.py          # Handles database connections
-│   ├── llm_agent.py             # Interacts with the language model
-│   └── main_app.py              # Entry point for the application
-└── utils                        # Utility functions and scripts
-    ├── config_loader.py         # Loads configuration settings
-    ├── generate_tree.py         # Generates tree structures for data representation
-    └── helper.py                # Additional helper functions
-```
+- **`configs/`**: Holds configuration files like `settings.yaml` for application-wide settings and `dev.env` for environment variables.
+- **`sandbox/`**: Temporary space for experimentation, including trial scripts and exploratory testing. Not intended for definitive tests.
+- **`scripts/`**: Contains automation scripts, particularly PowerShell scripts for executing local commands and setup processes.
+- **`src/`**: The core directory housing main application logic, including file definitions for the LLM agent and database interactions.
+- **`utils/`**: Implements utility scripts for common tasks like configuration loading, helper functions, and generating tree structures.
+- **`requirements.txt`**: Lists the required Python packages and versions for the application environment.
+- **`bundle.yaml`**: Configuration file presumably used to manage service bundles or dependencies.
+- **`.github/workflows/`**: Automates workflows related to development, including README generation and continuous integration.
 
 ## Setup Instructions
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your_username/project_name.git
-   cd project_name
-   ```
-
-2. Create a virtual environment:
+1. **Python Version Requirement**: Ensure Python 3.8 or higher is installed on your system.
+2. **Creating Virtual Environment**:
    ```bash
    python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
-
-3. Activate the virtual environment:
-   - On Windows:
-     ```bash
-     .\venv\Scripts\activate
-     ```
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-
-4. Install the necessary packages using `requirements.txt`:
+3. **Installing Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
+4. **Setting Up `dev.env`**: 
+   - Navigate to `configs/` and create a file named `dev.env`.
+   - Populate it with the necessary environment variables:
+   ```env
+   SNOWFLAKE_ACCOUNT=your_account
+   SNOWFLAKE_USER=your_user
+   SNOWFLAKE_PASSWORD=your_password
+   SNOWFLAKE_ROLE=your_role
+   SNOWFLAKE_DATABASE=your_db
+   SNOWFLAKE_SCHEMA=public
+   SNOWFLAKE_WAREHOUSE=your_wh
+   OPENAI_API_KEY=your_api_key
+   ```
 
-## Running Scripts
+5. **Verifying Snowflake Connectivity**: Run a test script to check the connection with Snowflake, available in the `sandbox/` directory.
 
-To run the application locally, use the provided script in the `scripts/` directory:
-
-```bash
-powershell -ExecutionPolicy Bypass -File scripts/run_local.ps1
-```
+## Running the Application
+- To run the application via Python:
+   ```bash
+   python src/main_app.py
+   ```
+- Alternatively, use PowerShell to execute:
+   ```powershell
+   .\scripts\run_local.ps1
+   ```
+- Environment variables from `dev.env` are loaded automatically when the application starts.
 
 ## Description of `configs/`
-
-The `configs/` directory contains configuration files necessary for the operation of the application. The main file is `settings.yaml`, which holds various settings that can be customized based on the environment where the application is deployed (e.g., development, testing, production).
+- **`settings.yaml`**: Contains key-value pairs for different configurable settings within the application.
+- **`dev.env` Variables**:
+  - `SNOWFLAKE_ACCOUNT`: Your Snowflake account identifier.
+  - `SNOWFLAKE_USER`: Username for Snowflake access.
+  - `SNOWFLAKE_PASSWORD`: Password linked with the Snowflake user.
+  - `SNOWFLAKE_ROLE`: Role that dictates permissions within Snowflake.
+  - `SNOWFLAKE_DATABASE`: The specific database to be queried within Snowflake.
+  - `SNOWFLAKE_SCHEMA`: Default schema used for queries, typically set to `public`.
+  - `SNOWFLAKE_WAREHOUSE`: The Snowflake warehouse for executing queries.
+  - `OPENAI_API_KEY`: Your API key for accessing OpenAI's services.
 
 ## Description of `utils/`
+- **`config_loader.py`**: Loads configuration settings from YAML and environment files, ensuring application parameters are correctly set.
+- **`generate_tree.py`**: Provides functions for generating tree structures or hierarchical representations of data, facilitating better visualization.
+- **`helper.py`**: Contains miscellaneous helper functions to support various application functionalities, including error handling and data conversion.
 
-The `utils/` directory contains helper scripts that assist in various operations throughout the application:
-
-- **config_loader.py**: A utility for loading configuration settings from the YAML files.
-- **generate_tree.py**: A utility for generating hierarchical data structures, which could be useful for representing query results.
-- **helper.py**: Contains general-purpose helper functions for the application that may be reused across multiple modules.
-
-## Description of `tests/`
-
-The `sandbox/` directory holds all the testing scripts for the application. These tests cover various aspects of functionality:
-
-- **test_connection.py**: Tests for verifying the integrity and reliability of database connections.
-- **test_db.py**: Includes tests that check database operations such as CRUD functionalities.
-- **test_langchain.py**: Verifies functions interacting with the language model.
-- **test_sql.ipynb**: A Jupyter Notebook that allows interactive testing and exploration of SQL functionalities.
-- **test_sql_generation.py**: Tests specifically for the SQL query generation capabilities.
+## Description of `sandbox/`
+The `sandbox/` directory serves as an experimental environment for developers. It is not a formal testing suite but a space to run trial scripts and develop new functionalities without impacting the core application. Feel free to experiment with Snowflake queries, LLM interactions, and other functionalities safely here.
 
 ## Example Usage
-
-After setting up the project and ensuring the environment is correctly configured, you can execute the main application using:
-
-```bash
-python src/main_app.py
+### Snowflake Query Example
+Using the LLM agent, you might input a natural language query such as:
+- "Show me the total sales last quarter."
+The LLM translates this to:
+```sql
+SELECT SUM(sales) FROM sales_data WHERE sale_date >= '2023-01-01' AND sale_date < '2023-04-01';
 ```
 
-This will run the application and allow you to interact with the database through the configured settings.
+### CLI Example
+To initiate a query via command line, you can execute:
+```bash
+python src/main_app.py "What were the top-selling products?"
+```
+
+### Simple Workflow Example
+1. Activate your virtual environment.
+2. Ensure the necessary configurations are set in `dev.env`.
+3. Run `src/main_app.py`.
+4. Enter your natural language query when prompted.
 
 ## Contribution Guidelines
+- **Branching Strategy**: Develop features in their own branches named after the feature (e.g., `feature/query-optimization`).
+- **PR Expectations**: Ensure all code is tested, and relevant documentation is updated before submitting a pull request.
+- **Naming Conventions**: Use `snake_case` for variable and function names. Class names should use `CamelCase`.
+- **Adding New Modules**: Ensure to document new modules thoroughly and consider updating the README if necessary to reflect new functionalities.
 
-Contributions are welcome! Here’s how you can help:
-
-1. Fork the repository.
-2. Create a new branch:
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-3. Make your changes and commit:
-   ```bash
-   git commit -m 'Add Your Feature'
-   ```
-4. Push your changes:
-   ```bash
-   git push origin feature/YourFeature
-   ```
-5. Open a pull request detailing your changes.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## License Section
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
+```
