@@ -55,27 +55,138 @@ jobs:
               folder_tree = f.read()
 
           prompt = f"""
-          You are an expert technical writer.
-          Below is my project's actual folder structure.
+                  You are an expert technical writer, software architect, and developer advocate.
+                  Generate a **highly detailed, project-specific README.md** for THIS repository.
 
-          Generate a detailed, accurate README.md specific to THIS repo—not a template.
+                  ====================================================================
+                  ## PROJECT CONTEXT
+                  ====================================================================
 
-          The README must include:
-          - Project overview (deduce purpose from folders)
-          - Features
-          - Architecture summary
-          - Folder structure explanation
-          - Setup instructions (use requirements.txt)
-          - Running scripts (infer from scripts/, src/)
-          - Description of configs/
-          - Description of utils/
-          - Description of tests/
-          - Example usage
-          - Contribution guidelines
-          - License section
+                  ### Repository Name
+                  talk-to-my-data
 
-          Folder Structure:
-          {folder_tree}
+                  ### Project Name
+                  Convert the repo name into a human-friendly title:
+                  Use exactly: **"Talk to My Data"**
+
+                  ### Technology Focus
+                  - This project is designed to work with **Snowflake** (not a generic database)
+                  - It includes an **LLM agent** capable of interacting with Snowflake
+                  - Requirements should be inferred from the folder structure and requirements.txt
+
+                  ### Environment Setup Requirements
+                  README MUST explain:
+                  - How to configure `configs/dev.env`
+                  - What each environment variable means
+                  - Provide a full example block of a valid dev.env:
+
+                  ```
+                  SNOWFLAKE_ACCOUNT=your_account
+                  SNOWFLAKE_USER=your_user
+                  SNOWFLAKE_PASSWORD=your_password
+                  SNOWFLAKE_ROLE=your_role
+                  SNOWFLAKE_DATABASE=your_db
+                  SNOWFLAKE_SCHEMA=public
+                  SNOWFLAKE_WAREHOUSE=your_wh
+                  OPENAI_API_KEY=your_api_key
+                  ```
+
+                  ### Folder Structure (REAL, NOT HALLUCINATED)
+                  Use the actual folder structure below to infer purpose, content, and architecture.
+
+                  FOLDER STRUCTURE:
+                  {folder_tree}
+
+                  ====================================================================
+                  ## README REQUIREMENTS
+                  ====================================================================
+
+                  The README MUST include EVERY ONE of these sections in detail:
+
+                  ### 1. Project Name
+                  - Use **Talk to My Data**
+
+                  ### 2. Project Overview
+                  - Deduce purpose based on folders such as src/, utils/, configs/
+                  - Describe as an LLM-driven Snowflake query and interaction framework
+
+                  ### 3. Features
+                  - Capabilities inferred from db_connector.py, llm_agent.py, utilities, and scripts
+
+                  ### 4. Architecture Summary
+                  Explain major components:
+                  - `src/main_app.py` – main entrypoint
+                  - `src/db_connector.py` – Snowflake connector logic
+                  - `src/llm_agent.py` – LLM interface & query agent
+                  - `utils/` – configuration loader, helpers, tree generator
+                  - `configs/settings.yml` – configuration mapping
+                  - `configs/dev.env` – environment variable store
+                  - `scripts/*.ps1` – operational automation scripts
+                  - `.github/workflows` – automated README generation
+
+                  ### 5. Folder Structure Explanation
+                  Describe purpose of each:
+                  - configs/
+                  - sandbox/ (should be described as scratch area, not real tests)
+                  - scripts/
+                  - src/
+                  - utils/
+                  - requirements.txt
+                  - bundle.yaml
+                  - .github/workflows/
+
+                  ### 6. Setup Instructions
+                  Include:
+                  - Python version requirement
+                  - Creating virtual environment
+                  - Installing dependencies from requirements.txt
+                  - Setting up dev.env
+                  - Verifying Snowflake connectivity
+
+                  ### 7. Running the Application
+                  Explain:
+                  - Running via python: `python src/main_app.py`
+                  - Running via PowerShell: `scripts/run_local.ps1`
+                  - How environment variables are loaded
+
+                  ### 8. Description of configs/
+                  - Explain settings.yml
+                  - Explain dev.env variables and usage
+
+                  ### 9. Description of utils/
+                  - Summaries of config_loader.py, generate_tree.py, helper.py
+
+                  ### 10. Description of sandbox/
+                  - Clarify it is not a test suite
+                  - Used for experiments, scratch development, trial scripts
+
+                  ### 11. Example Usage
+                  Provide:
+                  - A Snowflake query example handled by the LLM agent
+                  - A CLI example or function call example
+                  - A simple workflow example
+
+                  ### 12. Contribution Guidelines
+                  Include:
+                  - Basic branching strategy
+                  - Expectations for PRs
+                  - Naming conventions
+                  - How to add new modules
+
+                  ### 13. License Section
+                  Include a placeholder if no license is committed.
+
+                  ====================================================================
+                  ## FINAL INSTRUCTIONS
+                  ====================================================================
+
+                  - Produce a **polished, professional README.md**.
+                  - The README MUST be **specific to THIS repository**, using the actual folder structure.
+                  - DO NOT hallucinate directories, components, or technologies.
+                  - DO NOT generate a generic template.
+                  - Use clear Markdown formatting with headers, lists, and code blocks.
+                  - README must read like production-grade documentation.
+
           """
 
           completion = openai.chat.completions.create(
