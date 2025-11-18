@@ -21,7 +21,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install tree utility
-        run: sudo apt-get update && sudo apt-get install -y tree
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tree
 
       - name: Generate folder tree
         run: |
@@ -67,29 +69,27 @@ Convert the repo name into a human-friendly title:
 Use exactly: Talk to My Data
 
 ### Technology Focus
-- This project is designed to work with Snowflake (not a generic database)
-- It includes an LLM agent capable of interacting with Snowflake
-- Requirements should be inferred from the folder structure and requirements.txt
+- Uses Snowflake as the primary database
+- Implements an LLM agent for interactions with Snowflake
+- Requirements inferred from folder structure and requirements.txt
 
 ### Environment Setup Requirements
-README MUST explain:
+The README MUST explain:
 - How to configure configs/dev.env
-- What each environment variable means
-- Provide a full example block of a valid dev.env:
+- Explanation of each environment variable
+- Include this example environment file:
 
-```
-SNOWFLAKE_ACCOUNT=your_account
-SNOWFLAKE_USER=your_user
-SNOWFLAKE_PASSWORD=your_password
-SNOWFLAKE_ROLE=your_role
-SNOWFLAKE_DATABASE=your_db
-SNOWFLAKE_SCHEMA=public
-SNOWFLAKE_WAREHOUSE=your_wh
-OPENAI_API_KEY=your_api_key
-```
+    SNOWFLAKE_ACCOUNT=your_account
+    SNOWFLAKE_USER=your_user
+    SNOWFLAKE_PASSWORD=your_password
+    SNOWFLAKE_ROLE=your_role
+    SNOWFLAKE_DATABASE=your_db
+    SNOWFLAKE_SCHEMA=public
+    SNOWFLAKE_WAREHOUSE=your_wh
+    OPENAI_API_KEY=your_api_key
 
 ### Folder Structure (REAL, NOT HALLUCINATED)
-Use the actual folder structure below to infer purpose, content, and architecture.
+Use the folder structure below to infer purpose, content, and architecture:
 
 FOLDER STRUCTURE:
 {folder_tree}
@@ -99,13 +99,18 @@ FOLDER STRUCTURE:
 ====================================================================
 
 ### 1. Project Name
-- Use Talk to My Data
+Use: Talk to My Data
 
 ### 2. Project Overview
-- Deduce purpose from the real folder structure
+Describe as an LLM-driven Snowflake query and interaction framework.
 
 ### 3. Features
-- Infer from utilities, Snowflake connector, LLM agent, scripts
+Infer from:
+- db_connector.py
+- llm_agent.py
+- utilities
+- scripts
+- configs
 
 ### 4. Architecture Summary
 Explain components:
@@ -118,38 +123,49 @@ Explain components:
 - .github/workflows
 
 ### 5. Folder Structure Explanation
-Describe the purpose of each real folder
+Describe each folder according to the real structure.
 
 ### 6. Setup Instructions
-Include requirements, virtualenv, environment variables, installation steps
+Explain:
+- Python version
+- Virtual environment creation
+- Installing dependencies
+- Setting up environment variables
 
 ### 7. Running the Application
-Explain python run, PowerShell run scripts, configuration loading
+Explain Python execution and PowerShell scripts.
 
 ### 8. Description of configs/
-(settings.yml, dev.env)
+Explain:
+- settings.yml
+- dev.env variables
 
 ### 9. Description of utils/
-(config_loader.py, generate_tree.py, helper.py)
+Explain:
+- config_loader.py
+- generate_tree.py
+- helper.py
 
 ### 10. Description of sandbox/
-Explain it is for scratch and experimentation
+Explain it is a scratch area for experiments, NOT tests.
 
 ### 11. Example Usage
-Provide Snowflake + LLM example usage
+Provide Snowflake + LLM usage examples.
 
 ### 12. Contribution Guidelines
+Explain basic contribution steps.
 
 ### 13. License Section
+Add a placeholder if none exists.
 
 ====================================================================
 ## FINAL INSTRUCTIONS
 ====================================================================
 
-- Produce a polished README
-- Tailored to this exact repository
+- Produce a polished, professional README.md
+- Tailored only to THIS repository
 - No hallucinations
-- GitHub Markdown must render correctly
+- Correct GitHub Markdown rendering
 """
 
 completion = openai.chat.completions.create(
