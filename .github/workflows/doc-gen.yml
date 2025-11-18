@@ -1,0 +1,68 @@
+﻿name: Auto-Generate README
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write   # allow workflow to commit README changes
+  id-token: write
+  actions: read
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Generate folder tree
+      - name: Generate folder structure
+        run: |
+          echo "📁 Folder Structure" > folder_structure.txt
+          echo "-----------------" >> folder_structure.txt
+          tree -a -I '.git|.github|node_modules|__pycache__' >> folder_structure.txt
+
+      # Use GitHub Copilot to generate README
+      - name: Generate README using Copilot
+        id: copilot
+        uses: github/copilot-chat-action@v1
+        with:
+          prompt: |
+            You are GitHub Copilot. Read the folder_structure.txt in this repo and generate a complete README.md with:
+            - Project overview
+            - Key features
+            - Architecture summary
+            - Folder structure (clean tree)
+            - Setup instructions
+            - How to run
+            - Dependencies
+            - Example usage
+            - Contribution guidelines
+            - License section
+            Use clean Markdown. You are creating a polished README for a production-quality GitHub project.
+
+      # Write the README.md output
+      - name: Save README.md
+        run: |
+          echo "${{ steps.copilot.outputs.response }}" > README.md
+
+      # Commit changes only if README changed
+      - name: Commit README if updated
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git diff --quiet README.md; then
+            git add README.md
+            git commit -m "Auto-update README via Copilot"
+            git push
+          else
+            echo "No README changes detected."
+          fi
