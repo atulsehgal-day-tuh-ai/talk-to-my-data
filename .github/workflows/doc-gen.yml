@@ -21,17 +21,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install tree utility
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tree
+        run: sudo apt-get update && sudo apt-get install -y tree
 
-      - name: Generate folder tree
+      - name: Generate folder structure
         run: |
-          echo "📁 Project Folder Structure" > folder_structure.txt
-          echo "--------------------------" >> folder_structure.txt
+          echo "Project Folder Structure" > folder_structure.txt
+          echo "------------------------" >> folder_structure.txt
           tree -a -I '.git|.github|__pycache__|.venv' >> folder_structure.txt
 
-      - name: Upload folder_structure.txt for debugging
+      - name: Upload folder_structure.txt (debug)
         uses: actions/upload-artifact@v4
         with:
           name: folder-structure
@@ -42,7 +40,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install openai
 
-      - name: Generate README using OpenAI GPT
+      - name: Generate README using OpenAI
         run: |
           python3 - << 'EOF'
           import os
@@ -54,118 +52,48 @@ jobs:
               folder_tree = f.read()
 
           prompt = f"""
-          You are an expert technical writer, software architect, and developer advocate.
-          Generate a highly detailed, project-specific README.md for THIS repository.
+            You are an expert technical writer. Generate a clean, professional README.md for this repository.
 
-          ====================================================================
-          ## PROJECT CONTEXT
-          ====================================================================
+            Project Name:
+            Talk to My Data
 
-          ### Repository Name
-          talk-to-my-data
+            Summary:
+            This project provides an LLM-driven interface for interacting with Snowflake. Users can issue natural-language queries, which the system converts into SQL, executes against Snowflake, and returns results. The repository includes utilities, configuration management, automation scripts, and Snowflake connectivity.
 
-          ### Project Name
-          Convert the repo name into a human-friendly title:
-          Use exactly: Talk to My Data
+            The README must include the following sections:
 
-          ### Technology Focus
-          - Uses Snowflake as the primary database
-          - Implements an LLM agent for interactions with Snowflake
-          - Requirements inferred from folder structure and requirements.txt
+            1. Project Overview
+            2. Features
+            3. Architecture Summary
+            4. Folder Structure Explanation
+            5. Setup Instructions
+            6. Running the Application
+            7. configs/ Explanation
+            8. utils/ Explanation
+            9. sandbox/ Explanation (clarify it is for scratch experiments)
+            10. Example Usage
+            11. Contribution Guidelines
+            12. License
 
-          ### Environment Setup Requirements
-          The README MUST explain:
-          - How to configure configs/dev.env
-          - Explanation of each environment variable
-          - Include this example environment file:
+            Use the real folder structure to infer details:
 
-              SNOWFLAKE_ACCOUNT=your_account
-              SNOWFLAKE_USER=your_user
-              SNOWFLAKE_PASSWORD=your_password
-              SNOWFLAKE_ROLE=your_role
-              SNOWFLAKE_DATABASE=your_db
-              SNOWFLAKE_SCHEMA=public
-              SNOWFLAKE_WAREHOUSE=your_wh
-              OPENAI_API_KEY=your_api_key
+            {folder_tree}
 
-          ### Folder Structure (REAL, NOT HALLUCINATED)
-          Use the folder structure below to infer purpose, content, and architecture:
+            Environment File Example (minimal):
+            SNOWFLAKE_ACCOUNT=
+            SNOWFLAKE_USER=
+            SNOWFLAKE_PASSWORD=
+            SNOWFLAKE_ROLE=
+            SNOWFLAKE_DATABASE=
+            SNOWFLAKE_SCHEMA=
+            SNOWFLAKE_WAREHOUSE=
+            OPENAI_API_KEY=
 
-          FOLDER STRUCTURE:
-          {folder_tree}
-
-          ====================================================================
-          ## README REQUIREMENTS
-          ====================================================================
-
-          ### 1. Project Name
-          Use: Talk to My Data
-
-          ### 2. Project Overview
-          Describe as an LLM-driven Snowflake query and interaction framework.
-
-          ### 3. Features
-          Infer from:
-          - db_connector.py
-          - llm_agent.py
-          - utilities
-          - scripts
-          - configs
-
-          ### 4. Architecture Summary
-          Explain components:
-          - src/main_app.py
-          - src/db_connector.py
-          - src/llm_agent.py
-          - utils/
-          - configs/
-          - scripts/
-          - .github/workflows
-
-          ### 5. Folder Structure Explanation
-          Describe each folder according to the real structure.
-
-          ### 6. Setup Instructions
-          Explain:
-          - Python version
-          - Virtual environment creation
-          - Installing dependencies
-          - Setting up environment variables
-
-          ### 7. Running the Application
-          Explain Python execution and PowerShell scripts.
-
-          ### 8. Description of configs/
-          Explain:
-          - settings.yml
-          - dev.env variables
-
-          ### 9. Description of utils/
-          Explain:
-          - config_loader.py
-          - generate_tree.py
-          - helper.py
-
-          ### 10. Description of sandbox/
-          Explain it is a scratch area for experiments, NOT tests.
-
-          ### 11. Example Usage
-          Provide Snowflake + LLM usage examples.
-
-          ### 12. Contribution Guidelines
-          Explain basic contribution steps.
-
-          ### 13. License Section
-          Add a placeholder if none exists.
-
-          ====================================================================
-          ## FINAL INSTRUCTIONS
-          ====================================================================
-
-          - Produce a polished, professional README.md
-          - Tailored only to THIS repository
-          - No hallucinations
-          - Correct GitHub Markdown rendering
+            Important instructions:
+            - Do NOT add code fences.
+            - Do NOT hallucinate files.
+            - Use clear Markdown headings starting with ##.
+            - Keep the README concise but helpful.
           """
 
           completion = openai.chat.completions.create(
@@ -177,7 +105,6 @@ jobs:
 
           with open("README.md", "w") as f:
               f.write(output)
-
           EOF
 
       - name: Commit README.md
@@ -187,7 +114,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           if git diff --quiet README.md; then
-            echo "No changes in README.md"
+            echo "No README changes."
             exit 0
           fi
 
