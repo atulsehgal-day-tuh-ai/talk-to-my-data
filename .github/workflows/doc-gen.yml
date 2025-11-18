@@ -24,6 +24,11 @@ jobs:
           echo "--------------------------" >> folder_structure.txt
           tree -a -I '.git|.github|node_modules|__pycache__' >> folder_structure.txt
 
+      - name: Install OpenAI SDK
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install openai
+
       - name: Generate README using OpenAI GPT
         id: generate_readme
         run: |
