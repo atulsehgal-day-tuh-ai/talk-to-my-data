@@ -45,140 +45,140 @@ jobs:
       - name: Generate README using OpenAI GPT
         run: |
           python3 - << 'EOF'
-import os
-import openai
+          import os
+          import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+          openai.api_key = os.getenv("OPENAI_API_KEY")
 
-with open("folder_structure.txt") as f:
-    folder_tree = f.read()
+          with open("folder_structure.txt") as f:
+              folder_tree = f.read()
 
-prompt = f"""
-You are an expert technical writer, software architect, and developer advocate.
-Generate a highly detailed, project-specific README.md for THIS repository.
+          prompt = f"""
+          You are an expert technical writer, software architect, and developer advocate.
+          Generate a highly detailed, project-specific README.md for THIS repository.
 
-====================================================================
-## PROJECT CONTEXT
-====================================================================
+          ====================================================================
+          ## PROJECT CONTEXT
+          ====================================================================
 
-### Repository Name
-talk-to-my-data
+          ### Repository Name
+          talk-to-my-data
 
-### Project Name
-Convert the repo name into a human-friendly title:
-Use exactly: Talk to My Data
+          ### Project Name
+          Convert the repo name into a human-friendly title:
+          Use exactly: Talk to My Data
 
-### Technology Focus
-- Uses Snowflake as the primary database
-- Implements an LLM agent for interactions with Snowflake
-- Requirements inferred from folder structure and requirements.txt
+          ### Technology Focus
+          - Uses Snowflake as the primary database
+          - Implements an LLM agent for interactions with Snowflake
+          - Requirements inferred from folder structure and requirements.txt
 
-### Environment Setup Requirements
-The README MUST explain:
-- How to configure configs/dev.env
-- Explanation of each environment variable
-- Include this example environment file:
+          ### Environment Setup Requirements
+          The README MUST explain:
+          - How to configure configs/dev.env
+          - Explanation of each environment variable
+          - Include this example environment file:
 
-    SNOWFLAKE_ACCOUNT=your_account
-    SNOWFLAKE_USER=your_user
-    SNOWFLAKE_PASSWORD=your_password
-    SNOWFLAKE_ROLE=your_role
-    SNOWFLAKE_DATABASE=your_db
-    SNOWFLAKE_SCHEMA=public
-    SNOWFLAKE_WAREHOUSE=your_wh
-    OPENAI_API_KEY=your_api_key
+              SNOWFLAKE_ACCOUNT=your_account
+              SNOWFLAKE_USER=your_user
+              SNOWFLAKE_PASSWORD=your_password
+              SNOWFLAKE_ROLE=your_role
+              SNOWFLAKE_DATABASE=your_db
+              SNOWFLAKE_SCHEMA=public
+              SNOWFLAKE_WAREHOUSE=your_wh
+              OPENAI_API_KEY=your_api_key
 
-### Folder Structure (REAL, NOT HALLUCINATED)
-Use the folder structure below to infer purpose, content, and architecture:
+          ### Folder Structure (REAL, NOT HALLUCINATED)
+          Use the folder structure below to infer purpose, content, and architecture:
 
-FOLDER STRUCTURE:
-{folder_tree}
+          FOLDER STRUCTURE:
+          {folder_tree}
 
-====================================================================
-## README REQUIREMENTS
-====================================================================
+          ====================================================================
+          ## README REQUIREMENTS
+          ====================================================================
 
-### 1. Project Name
-Use: Talk to My Data
+          ### 1. Project Name
+          Use: Talk to My Data
 
-### 2. Project Overview
-Describe as an LLM-driven Snowflake query and interaction framework.
+          ### 2. Project Overview
+          Describe as an LLM-driven Snowflake query and interaction framework.
 
-### 3. Features
-Infer from:
-- db_connector.py
-- llm_agent.py
-- utilities
-- scripts
-- configs
+          ### 3. Features
+          Infer from:
+          - db_connector.py
+          - llm_agent.py
+          - utilities
+          - scripts
+          - configs
 
-### 4. Architecture Summary
-Explain components:
-- src/main_app.py
-- src/db_connector.py
-- src/llm_agent.py
-- utils/
-- configs/
-- scripts/
-- .github/workflows
+          ### 4. Architecture Summary
+          Explain components:
+          - src/main_app.py
+          - src/db_connector.py
+          - src/llm_agent.py
+          - utils/
+          - configs/
+          - scripts/
+          - .github/workflows
 
-### 5. Folder Structure Explanation
-Describe each folder according to the real structure.
+          ### 5. Folder Structure Explanation
+          Describe each folder according to the real structure.
 
-### 6. Setup Instructions
-Explain:
-- Python version
-- Virtual environment creation
-- Installing dependencies
-- Setting up environment variables
+          ### 6. Setup Instructions
+          Explain:
+          - Python version
+          - Virtual environment creation
+          - Installing dependencies
+          - Setting up environment variables
 
-### 7. Running the Application
-Explain Python execution and PowerShell scripts.
+          ### 7. Running the Application
+          Explain Python execution and PowerShell scripts.
 
-### 8. Description of configs/
-Explain:
-- settings.yml
-- dev.env variables
+          ### 8. Description of configs/
+          Explain:
+          - settings.yml
+          - dev.env variables
 
-### 9. Description of utils/
-Explain:
-- config_loader.py
-- generate_tree.py
-- helper.py
+          ### 9. Description of utils/
+          Explain:
+          - config_loader.py
+          - generate_tree.py
+          - helper.py
 
-### 10. Description of sandbox/
-Explain it is a scratch area for experiments, NOT tests.
+          ### 10. Description of sandbox/
+          Explain it is a scratch area for experiments, NOT tests.
 
-### 11. Example Usage
-Provide Snowflake + LLM usage examples.
+          ### 11. Example Usage
+          Provide Snowflake + LLM usage examples.
 
-### 12. Contribution Guidelines
-Explain basic contribution steps.
+          ### 12. Contribution Guidelines
+          Explain basic contribution steps.
 
-### 13. License Section
-Add a placeholder if none exists.
+          ### 13. License Section
+          Add a placeholder if none exists.
 
-====================================================================
-## FINAL INSTRUCTIONS
-====================================================================
+          ====================================================================
+          ## FINAL INSTRUCTIONS
+          ====================================================================
 
-- Produce a polished, professional README.md
-- Tailored only to THIS repository
-- No hallucinations
-- Correct GitHub Markdown rendering
-"""
+          - Produce a polished, professional README.md
+          - Tailored only to THIS repository
+          - No hallucinations
+          - Correct GitHub Markdown rendering
+          """
 
-completion = openai.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": prompt}]
-)
+          completion = openai.chat.completions.create(
+              model="gpt-4o-mini",
+              messages=[{"role": "user", "content": prompt}]
+          )
 
-output = completion.choices[0].message.content
+          output = completion.choices[0].message.content
 
-with open("README.md", "w") as f:
-    f.write(output)
+          with open("README.md", "w") as f:
+              f.write(output)
 
-EOF
+          EOF
 
       - name: Commit README.md
         shell: bash
