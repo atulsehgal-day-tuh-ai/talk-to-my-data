@@ -20,20 +20,34 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # Install tree command (required to list folders)
+      - name: Install tree utility
+        run: sudo apt-get update && sudo apt-get install -y tree
+
+      # Generate ACTUAL folder structure
       - name: Generate folder tree
         run: |
           echo "📁 Project Folder Structure" > folder_structure.txt
           echo "--------------------------" >> folder_structure.txt
+          tree -a -I '.git|.github|__pycache__|.venv' >> folder_structure.txt
+
+      # Upload folder_structure.txt so you can inspect it
+      - name: Upload folder_structure.txt for debugging
+        uses: actions/upload-artifact@v4
+        with:
+          name: folder-structure
+          path: folder_structure.txt
+
       - name: Install OpenAI SDK
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install openai
 
       - name: Generate README using OpenAI GPT
-        id: generate_readme
         run: |
           python3 - << 'EOF'
-          import os, openai
+          import os
+          import openai
 
           openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -41,25 +55,29 @@ jobs:
               folder_tree = f.read()
 
           prompt = f"""
-          You are an expert software documentation generator.
-          Using the folder structure below, generate a professional README.md that includes:
-          - Overview
+          You are an expert technical writer.
+          Below is my project's actual folder structure.
+
+          Generate a detailed, accurate README.md specific to THIS repo—not a template.
+
+          The README must include:
+          - Project overview (deduce purpose from folders)
           - Features
           - Architecture summary
-          - Folder structure
-          - Setup instructions
-          - Running the app
+          - Folder structure explanation
+          - Setup instructions (use requirements.txt)
+          - Running scripts (infer from scripts/, src/)
+          - Description of configs/
+          - Description of utils/
+          - Description of tests/
           - Example usage
-          - Configuration details
-          - Testing instructions
           - Contribution guidelines
           - License section
 
-          Folder structure:
+          Folder Structure:
           {folder_tree}
           """
 
-          # Call GPT
           completion = openai.chat.completions.create(
               model="gpt-4o-mini",
               messages=[{"role": "user", "content": prompt}]
@@ -85,4 +103,3 @@ jobs:
           git add README.md
           git commit -m "Auto-update README via GPT"
           git push
-
