@@ -72,12 +72,17 @@ jobs:
           EOF
 
       - name: Commit README.md
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet README.md; then
-            git add README.md
-            git commit -m "Auto-update README with OpenAI GPT"
-            git push
-          else
-            echo "No README changes"
+
+          if git diff --quiet README.md; then
+            echo "No changes in README.md"
+            exit 0
+          fi
+
+          git add README.md
+          git commit -m "Auto-update README via GPT"
+          git push
+
