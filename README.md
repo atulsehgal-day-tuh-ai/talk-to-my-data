@@ -1,114 +1,94 @@
 # Talk to My Data
 
 ## Project Overview
-
-Talk to My Data provides an innovative interface for interacting with Snowflake using a large language model (LLM). Users can formulate queries in natural language, which the system interprets, translates into SQL, executes against a Snowflake database, and then returns the results. This project aims to simplify data access and manipulation, making it more intuitive for users.
+Talk to My Data is an innovative project that provides a user-friendly interface powered by a Large Language Model (LLM) for seamless interaction with Snowflake, a popular cloud data platform. Users can issue natural language queries, and the system translates these into SQL queries, executes them against Snowflake, and delivers the results back to the user. This project offers utilities, configuration management tools, automation scripts, and facilitates easy connectivity with Snowflake, enhancing the querying experience for data analysts and developers.
 
 ## Features
-
-- Natural language query processing
-- SQL generation from natural language
-- Seamless integration with Snowflake
-- Result retrieval and display
-- Configuration management
-- Automation scripts for deployment and management
+- Natural language processing to convert user queries into SQL
+- Direct communication with the Snowflake database
+- Easy-to-use configuration management
+- Automation scripts for efficient operation
+- Utilities for handling various tasks related to data interaction
 
 ## Architecture Summary
-
-The architecture of Talk to My Data consists of several components:
-- **LLM Agent**: Responsible for interpreting natural language queries and generating corresponding SQL statements.
-- **Database Connector**: Facilitates interaction with the Snowflake database.
-- **Main Application**: Orchestrates the flow of data between the user inputs, LLM agent, and the database connector.
+The architecture of Talk to My Data is centered around a modular design that separates concerns for better maintainability. The system primarily consists of:
+- A database connector (`db_connector.py`) for interfacing with Snowflake
+- An LLM agent (`llm_agent.py`) for processing natural language queries
+- The main application logic (`main_app.py`) that orchestrates the overall process
 
 ## Folder Structure Explanation
+The repository is organized as follows:
 
-The repository has the following folder structure:
-
-```
-.
-├── .gitignore
-├── .vscode
-├── README.md
-├── bundle.yaml
-├── configs
-├── folder_structure.txt
-├── requirements.txt
-├── sandbox
-├── scripts
-└── src
-└── utils
-```
-
-- **.gitignore**: Specifies files and directories that should be ignored by Git.
-- **.vscode**: Contains settings for Visual Studio Code, facilitating an efficient development environment.
-- **configs/**: Configuration files for setting application parameters.
-- **sandbox/**: Contains scripts and notebooks for testing and experimentation.
-- **scripts/**: Automation scripts for running the application locally.
-- **src/**: The source code for the application, including key modules and components.
-- **utils/**: Utility functions for configuration loading and helper functions.
+- `.gitignore`: Specifies files and folders ignored by Git.
+- `.vscode`: Contains configuration files for Visual Studio Code.
+- `README.md`: This README file.
+- `bundle.yaml`: A configuration file for various deployment settings.
+- `configs/`: Contains configuration files for application settings.
+- `folder_structure.txt`: Documentation of the folder structure.
+- `requirements.txt`: Lists the dependencies required for the project.
+- `sandbox/`: A directory for experimentation and testing scripts.
+- `scripts/`: Automation scripts for local and deployment tasks.
+- `src/`: The main source code for the application.
+- `utils/`: Utility functions and helper scripts.
 
 ## Setup Instructions
-
-To set up the project:
+To set up the project locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone [repository-url]
-   ```
-2. Navigate to the project directory:
-   ```bash
+   git clone https://github.com/your-username/talk-to-my-data.git
    cd talk-to-my-data
    ```
-3. Install the required Python packages:
+
+2. Create a virtual environment (optional):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+3. Install the necessary dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Configure the settings in `configs/settings.yaml` with your Snowflake credentials and other necessary details.
+
+4. Configure connection properties by populating the `settings.yaml` file in the `configs/` directory with your Snowflake and OpenAI credentials.
 
 ## Running the Application
-
-To run the application locally, execute the following command:
-
+To run the application, execute the following command in the root of the project:
 ```bash
 python src/main_app.py
 ```
-
-Ensure that all configurations are set correctly in the `settings.yaml` file.
+Follow the prompts to interact with the application through natural language queries.
 
 ## configs/ Explanation
-
-The `configs/` directory contains configuration files as YAML. The main file, `settings.yaml`, stores essential parameters like your Snowflake account credentials, role, database, schema, and API keys required for connecting to external services.
+The `configs/` directory contains configuration files, primarily `settings.yaml`, where users specify their Snowflake connection configurations, including account details, credentials, and OpenAI API keys. This file centralizes connection management for easier access and modification.
 
 ## utils/ Explanation
-
-The `utils/` directory comprises utility scripts that assist with various functionalities:
-- **config_loader.py**: Handles loading configurations from the settings file.
-- **generate_tree.py**: Contains functions to generate hierarchical data structures for ease of handling.
-- **helper.py**: Offers miscellaneous helper functions used throughout the project.
+The `utils/` directory provides utility scripts that facilitate various support functions:
+- `config_loader.py`: Loads and manages configuration settings.
+- `generate_tree.py`: Assists in generating hierarchical representations of data or SQL structures.
+- `helper.py`: Contains miscellaneous helper functions used throughout the application.
 
 ## sandbox/ Explanation
-
-The `sandbox/` directory is designated for scratch experiments and proofs of concept. It includes test scripts and Jupyter notebooks for testing database connections and experimenting with SQL generation and querying logic. This space allows developers to iterate quickly without affecting the main codebase.
+The `sandbox/` directory is intended for scratch experiments and testing. It includes various scripts and notebooks for trial and exploration, such as:
+- `test_connection.py`: Tests the connection to the Snowflake database.
+- `test_langchain.py`: Experiments with language model integrations.
+- Various other test scripts to validate functionality without affecting the main application.
 
 ## Example Usage
+Once the application is running, you can type in natural language queries such as:
+- "Show me the sales data for the last quarter."
+- "What are the top 5 products in terms of revenue?"
 
-1. Start the application as mentioned in the "Running the Application" section.
-2. Input a natural language query, such as:
-   ```
-   "Show me the sales data for the last quarter."
-   ```
-3. The application will convert the input into SQL, execute it, and return the results from the Snowflake database.
+The system will translate your query into SQL, execute it, and return the relevant results.
 
 ## Contribution Guidelines
-
-We welcome contributions to improve the project. Please follow these steps:
+Contributions to Talk to My Data are welcome! If you'd like to contribute, please follow these steps:
 1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them.
-4. Push your branch and open a pull request.
-
-Make sure to adhere to the project's coding standards and test your changes.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes and commit them (`git commit -m 'Add new feature'`).
+4. Push to your branch (`git push origin feature/YourFeature`).
+5. Open a pull request detailing your changes.
 
 ## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
